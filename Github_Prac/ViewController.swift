@@ -12,7 +12,24 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
+        fetchGithubUser()
     }
+    
+    func fetchGithubUser(){
+        
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = "api.github.com"
+        urlComponents.path = "/users/dheerajghub"
+        guard let url = urlComponents.url else {
+            preconditionFailure("Failed to construct URL")
+        }
+        let task = URLSession.shared.dataTask(with: url){
+            data, response, error in
+        }
+        task.resume()
+        
+    }
+    
 }
 
