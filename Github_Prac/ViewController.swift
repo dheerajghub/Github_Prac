@@ -31,18 +31,18 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchGithubData{ (repoDetail, err) in
+        fetchGithubData { (res) in
             
-            if let err = err {
-                print("Error fetching repodetrail")
+            switch res {
+                case .success(let repoDetail):
+                    print(repoDetail)
+                case .failure(let err):
+                    print("Error fetching repodetails" , err)
             }
-            
-            print(repoDetail as Any)
         }
-        
     }
     
-    fileprivate func fetchGithubData(completion: @escaping ([repoDetails]? , Error?) ->()){
+    fileprivate func fetchGithubData(completion: @escaping (Result<[repoDetails] , Error>) ->()){
         
         let urlString = "https://api.github.com/users/dheerajghub/repos"
         
@@ -51,7 +51,7 @@ class ViewController: UIViewController {
         URLSession.shared.dataTask(with: url){ (data, resp, err) in
             
             if let err = err {
-                completion(nil , err)
+                completion(.failure(err))
                 return
             }
             
@@ -59,9 +59,9 @@ class ViewController: UIViewController {
 
             do{
                 let repoDetail = try JSONDecoder().decode([repoDetails].self, from: data)
-                completion(repoDetail , nil)
+                completion(.success(repoDetail))
             } catch let jsonErr{
-                completion(nil , jsonErr)
+                completion(.failure(err!))
             }
             
         }.resume()
