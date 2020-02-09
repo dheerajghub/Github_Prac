@@ -8,21 +8,15 @@
 
 import UIKit
 
-struct githubUser{
+struct githubUser: Decodable{
     
-    var avatarUrl:String!
-    var bio:String!
-    var blog:String!
-    var followers:Int!
-    var following:Int!
+    //NOTE:- contants name should match with the json keys otherwise decoding will not work
     
-    init(json:[String:Any]){
-        avatarUrl = json["avatar_url"] as? String ?? ""
-        bio = json["bio"] as? String ?? ""
-        blog = json["blog"] as? String ?? ""
-        followers = json["followers"] as? Int ?? -1
-        following = json["following"] as? Int ?? -1
-    }
+    let avatar_url:String!
+    let bio:String!
+    let blog:String!
+    let followers:Int!
+    let following:Int!
     
 }
 
@@ -46,10 +40,9 @@ class ViewController: UIViewController {
             DispatchQueue.main.async {
                 
                 do{
-                    guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:Any] else { return }
                     
-                    let user = githubUser(json: json)
-                    print(user.avatarUrl ?? "")
+                    let user = try JSONDecoder().decode(githubUser.self, from: data)
+                    print(user.avatar_url ?? "")
                     
                 } catch let jsonErr{
                     print("Error JSON serializing:" , jsonErr)
