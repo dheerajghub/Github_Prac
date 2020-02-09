@@ -8,19 +8,22 @@
 
 import UIKit
 
-struct UserDetail: Decodable{
+struct repoDetails: Decodable{
     
-    //NOTE:- contants name should match with the json keys otherwise decoding will not work
-    let id:String!
-    let userName:String!
-    let login:String!
-    let language:String!
-    let followers:Int!
+    let id:Int!
+    let name:String!
+    let full_name:String!
+    //NOTE:- As private is a predefine keyword , Escaping (`KEYWORD`) is necessary
+    let `private`:Bool!
+    let owner:OwnerDetails!
+    let fork:Bool!
     
 }
 
-struct Users: Decodable{
-    let users:[UserDetail]
+struct OwnerDetails: Decodable{
+    let login:String!
+    let id:Int!
+    let avatar_url:String!
 }
 
 class ViewController: UIViewController {
@@ -32,7 +35,7 @@ class ViewController: UIViewController {
     
     func fetchGithubUser(){
         
-        let urlString = "https://api.github.com/legacy/user/search/dheeraj"
+        let urlString = "https://api.github.com/users/dheerajghub/repos"
         guard let url = URL(string: urlString) else { return }
         
         let task = URLSession.shared.dataTask(with: url){
@@ -44,8 +47,8 @@ class ViewController: UIViewController {
                 
                 do{
                     
-                    let user = try JSONDecoder().decode(Users.self, from: data)
-                    print(user)
+                    let repoDetail = try JSONDecoder().decode([repoDetails].self, from: data)
+                    print(repoDetail)
                     
                 } catch let jsonErr{
                     print("Error JSON serializing:" , jsonErr)
