@@ -30,33 +30,41 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchGithubUser()
-    }
-    
-    func fetchGithubUser(){
         
-        let urlString = "https://api.github.com/users/dheerajghub/repos"
-        guard let url = URL(string: urlString) else { return }
-        
-        let task = URLSession.shared.dataTask(with: url){
-            data, response, error in
+        fetchGithubData{ (repoDetail, err) in
             
-            guard let data = data else { return }
-            
-            DispatchQueue.main.async {
-                
-                do{
-                    
-                    let repoDetail = try JSONDecoder().decode([repoDetails].self, from: data)
-                    print(repoDetail)
-                    
-                } catch let jsonErr{
-                    print("Error JSON serializing:" , jsonErr)
-                }
+            if let err = err {
+                print("Error fetching repodetrail")
             }
             
+            print(repoDetail as Any)
         }
-        task.resume()
+        
+    }
+    
+    fileprivate func fetchGithubData(completion: @escaping ([repoDetails]? , Error?) ->()){
+        
+        let urlString = "https://api.github.com/users/dheerajghub/repos"
+        
+        guard let url = URL(string: urlString) else { return }
+        
+        URLSession.shared.dataTask(with: url){ (data, resp, err) in
+            
+            if let err = err {
+                completion(nil , err)
+                return
+            }
+            
+            guard let data = data else { return }
+
+            do{
+                let repoDetail = try JSONDecoder().decode([repoDetails].self, from: data)
+                completion(repoDetail , nil)
+            } catch let jsonErr{
+                completion(nil , jsonErr)
+            }
+            
+        }.resume()
         
     }
     
